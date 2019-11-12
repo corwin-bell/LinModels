@@ -1,0 +1,75 @@
+---
+title: "Stadard Errors"
+author: "Corwin Bell"
+date: "11/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(UsingR)
+x = father.son$fheight
+y = father.son$sheight
+n = length(y)
+N = 50
+set.seed(1)
+index = sample(n,N)
+sampledat = father.son[index,]
+x = sampledat$fheight
+y = sampledat$sheight
+betahat = lm(y~x)$coef
+```
+
+```{r}
+fit = lm(y~x)
+deviance(fit)
+```
+```{r}
+y_hat = fit$fitted.values
+SR = (y_hat-y)^2
+SSR = sum(r_sq)
+SSR
+```
+
+```{r}
+sigma2 = SSR / 48
+```
+Form the design matrix X (note: use a capital X!). This can be done by combining a column of 1's with a column of 'x' the father's heights.
+```{r}
+X = cbind(rep(1,N), x)
+X
+```
+Now calculate (𝑋𝑇𝑋)−1, the inverse of X transpose times X. Use the solve() function for the inverse and t() for the transpose. What is the element in the first row, first column?
+```{r}
+X_inv = solve(t(X)%*%X)
+X_inv
+```
+Now we are one step away from the standard error of beta-hat. Take the diagonals from the (𝑋𝑇𝑋)−1 matrix above, using the diag() function. Now multiply our estimate of 𝜎2 and the diagonals of this matrix. This is the estimated variance of beta-hat, so take the square root of this. You should end up with two numbers, the standard error for the intercept and the standard error for the slope.
+What is the standard error for the slope?
+```{r}
+sqrt(sigma2 * diag(X_inv))
+```
+```{r}
+n <- nrow(father.son)
+N <- 50
+index <- sample(n,N)
+sampledat <- father.son[index,]
+x <- sampledat$fheight
+y <- sampledat$sheight
+X <- model.matrix(~x)
+
+N <- nrow(X)
+p <- ncol(X)
+
+XtXinv <- solve(crossprod(X))
+
+resid <- y - X %*% XtXinv %*% crossprod(X,y)
+ssr = sum(resid^2)
+s <- sqrt( sum(resid^2)/(N-p))
+ses <- sqrt(diag(XtXinv))*s
+ssr
+```
+

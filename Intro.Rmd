@@ -1,0 +1,161 @@
+---
+title: "LinModels"
+author: "Corwin Bell"
+date: "10/27/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+install.packages("UsingR")
+```
+
+```{r}
+library(UsingR)
+data("father.son",package="UsingR")
+```
+
+```{r}
+mean(father.son$sheight)
+```
+Create a list of son heights for sons that have fathers with heights of 71 inches (round to the nearest inch).
+```{r}
+sheight_list <-father.son[father.son$fheight>70.5 & father.son$fheight<71.5,"sheight"]
+mean(sheight_list)
+```
+
+```{r}
+X = matrix(1:1000,100,10)
+```
+
+Using the function cbind, create a 10 x 5 matrix with first column x=1:10. Then columns 2*x, 3*x, 4*x and 5*x in columns 2 through 5.
+What is the sum of the elements of the 7th row?
+```{r}
+x = 1:10
+x2 = x*2
+x3 = x*3
+x4 = x*4
+x5 = x*5
+x_merge <- cbind(x,x2,x3,x4,x5)
+rowSums(x_merge)
+```
+X*X^-1=I
+I do not understand why my answer is different than the tutorial. Also not clear to me why this solves the system of equations
+```{r}
+X <- matrix(c(1,3,2,1-2,1,1,1,-1),3,3)
+y <- matrix(c(6,2,1),3,1)
+solve(X)%*%y
+```
+Solve the following system of equations using R:
+
+3a + 4b - 5c + d = 10
+
+2a + 2b + 2c - d = 5
+
+a -b + 5c - 5d = 7
+
+5a + d = 4
+```{r}
+X <- matrix(c(3,4,-5,1,2,2,2,-1,1,-1,5,-5,5,0,0,1),4,4,byrow = TRUE)
+y <- matrix(c(10,5,7,4),4,1)
+solve(X)%*%y
+```
+```{r}
+a <- matrix(1:12, nrow=4)
+b <- matrix(1:15, nrow=3)
+a%*%b
+```
+Multiply the 3rd row of 'a' with the 2nd column of 'b', using the element-wise vector multiplication with *.
+What is the sum of the elements in the resulting vector?
+```{r}
+ sum(a[3,]*b[,2])
+```
+Equivalent to dot product function in Python
+```{r}
+crossprod(a[3,],b[,2])
+```
+```{r}
+x=father.son$fheight
+y=father.son$sheight
+X <-cbind(1,x)
+betahat <-solve(t(X)%*%X)%*%t(X)%*%y
+betahat
+```
+### Matrix Algbra Examples
+Suppose we are analyzing a set of 4 samples. The first two samples are from a treatment group A and the second two samples are from a treatment group B. This design can be represented with a model matrix like so:
+```{r}
+X <- matrix(c(1,1,1,1,0,0,1,1),nrow=4)
+rownames(X) <- c("a","a","b","b")
+```
+X matrix will then look like:
+```{r}
+X
+```
+
+Suppose that the fitted parameters for a linear model give us:
+```{r}
+beta <- c(5, 2)
+beta
+```
+
+
+Use the matrix multiplication operator, %*%, in R to answer the following questions:
+
+What is the fitted value for the A samples? (The fitted Y values.)
+```{r}
+X[1:2,] %*% beta
+```
+What is the fitted value for the B samples? (The fitted Y values.)
+```{r}
+X[3:4,] %*% beta
+```
+
+
+Suppose now we are comparing two treatments B and C to a control group A, each with two samples. This design can be represented with a model matrix like so:
+```{r}
+X <- matrix(c(1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,0,1,1),nrow=6)
+rownames(X) <- c("a","a","b","b","c","c")
+```
+which results in a matrix that looks like
+```{r}
+X
+```
+Suppose that the fitted values for the linear model are given by:
+```{r}
+beta <- c(10,3,-3)
+```
+What is the fitted value for the B samples?
+```{r}
+X[3:4,]%*%beta
+```
+What is the fitted value for the C samples?
+```{r}
+X[5:6,]%*%beta
+```
+
+
+
+

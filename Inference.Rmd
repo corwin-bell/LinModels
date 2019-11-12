@@ -1,0 +1,124 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will be random. This implies that our estimate of, for example, the gravitational constant will change. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
+```{r}
+g = 9.8 ## meters per second
+h0 = 56.67
+v0 = 0
+n = 25
+tt = seq(0,3.4,len=n) ##time in secs, t is a base function
+y = h0 + v0 *tt  - 0.5* g*tt^2 + rnorm(n,sd=1)
+```
+To obtain the LSE in R we could write:
+```{r}
+X = cbind(1,tt,tt^2)
+X
+```
+```{r}
+A = solve(crossprod(X))%*%t(X)
+A
+```
+```{r}
+y
+```
+
+```{r}
+-2*A%*%y
+```
+
+In the lines of code above, there was a call to a random function rnorm(). This means that each time the lines of code above are repeated, the estimate of g will be different.
+
+Use the code above in conjunction with the function replicate() to generate 100,000 Monte Carlo simulated datasets. For each dataset compute an estimate of g (remember to multiply by -2) and set the seed to 1.
+
+What is the standard deviation of this estimate?:
+```{r}
+distance_estimates <- replicate(100000,h0 + v0 *tt  - 0.5* g*tt^2 + rnorm(n,sd=1))
+```
+```{r}
+# estimate of g = -2*A%*%y[3]
+g_estimates <- -2*A%*%distance_estimates
+```
+```{r}
+sd(g_estimates[3,])
+```
+```{r}
+x = father.son$fheight
+y = father.son$sheight
+n = length(y)
+n
+```
+```{r}
+N =  50
+index = sample(n,N)
+sampledat = father.son[index,]
+x = sampledat$fheight
+y = sampledat$sheight
+betahat =  lm(y~x)$coef
+betahat
+```
+```{r}
+index = sample(length(father.son$sheight),50)
+index
+```
+
+```{r}
+beta_estimator <- function(N,df,x,y){
+  index = sample(length(df$y),N)
+  sampledat = df[index,]
+  x_s = sampledat$x
+  y_s = sampledat$y
+betahat =  lm(y_s~x_s)$coef
+return(betahat)
+}
+# Not sure why this is not working
+beta_estimator(N=50,df=father.son,x=fheight,y=sheight)
+```
+```{r}
+beta_estimator <- function(){
+  index = sample(length(father.son$sheight),50)
+  sampledat = father.son[index,]
+  x_s = sampledat$fheight
+  y_s = sampledat$sheight
+betahat =  lm(y_s~x_s)$coef
+return(betahat)
+}
+sheight_estimates <- replicate(10000,beta_estimator())
+```
+```{r}
+sheight_est_transpose <- data.frame(t(sheight_estimates))
+```
+```{r}
+sd(sheight_est_transpose$x_s)
+```
+We are defining a new concept: covariance. The covariance of two lists of numbers 𝑋=𝑋1,...,𝑋𝑛 and 𝑌=𝑌1,...,𝑌𝑛 is mean((Y - mean(Y))*(X-mean(X))).
+Which of the following is closest to the covariance between father heights and son heights
+```{r}
+covariance <- function(X,Y){
+  covar <-  mean((Y - mean(Y))*(X-mean(X)))
+  return(covar)  
+}
+covariance(father.son$fheight,father.son$sheight)
+```
+
+
+
+
+
+
